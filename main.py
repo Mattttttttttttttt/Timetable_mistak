@@ -13,14 +13,19 @@ import openpyxl
 
 
 
-#base_path = 'D:\Desktop\Программы Питон\ИТИП ошибки расписания\main'
-#in_files = sorted(glob(base_path + '/*.xls*'))
-#print(in_files)
+base_path = 'D:\Desktop\Программы Питон\ИТИП ошибки расписания\main'
+in_files = sorted(glob(base_path + '/*.xls*'))
+print(in_files)
+#file_list = ['BIK2101', 'BIK2102','BIK2103','BIK2104','BIK2105', 'BIK2106', 'BIK2107', 'BIK2108', 'BIK2109','BIK2201', 'BIK2202','BIK2203','BIK2204','BIK2205', 'BIK2206', 'BIK2207', 'BIK2208', 'BIK2209']
 df_list = []
-for i in range(1,10):
-    df_list.append(pd.read_excel(f'D:\Desktop\Программы Питон\ИТИП ошибки расписания\main\BIK210{i}.xlsx'))
-    print(f'D:\Desktop\Программы Питон\ИТИП ошибки расписания\main\BIK210{i}.xlsx')
+"""for i in range(1,len(file_list)):
+    df_list.append(pd.read_excel(f'D:\Desktop\Программы Питон\ИТИП ошибки расписания\main\{file_list[i]}.xlsx'))
+    print(f'D:\Desktop\Программы Питон\ИТИП ошибки расписания\main\{file_list[i]}.xlsx')"""
+for f in in_files:
+    df_list.append(pd.read_excel(f))
+    #print(f)
 for i in range(len(df_list)):
+    print(in_files[i])
     col_names = [
         'day',
         'l_num',
@@ -147,21 +152,33 @@ for i in range(1,7):
     for j in range(1,5):
         df_1 = df[df['l_num'] == j]
         master_df_1 = df_1[df_1['lector_1'] == lec]
-        if master_df_1.shape[0] > 1:
+        if (master_df_1.shape[0] > 1 and master_df_1.shape[0] <4):
             df_l1 = master_df_1[master_df_1['l_type_1'] != 'л.']
+            df_l1 = df_l1[df_l1['l_type_1'] != ' л.']
             if df_l1.shape[0] > 1:
                 err = err + 1
                 print(f"Найдена ошибка номер {err}: ")
                 print(df_l1)
                 df_err = pd.concat([df_err, df_l1])
+        elif(master_df_1.shape[0] >=4):
+            err = err + 1
+            print(f"Найдена ошибка номер {err}: ")
+            print(master_df_1.shape)
+            df_err = pd.concat([df_err, master_df_1])
         master_df_2 = df_1[df_1['lector_2'] == lec]
-        if master_df_2.shape[0] > 1:
+        if (master_df_2.shape[0] > 1 and master_df_2.shape[0] < 4):
             df_l2 = master_df_2[master_df_2['l_type_2'] != 'л.']
+            df_l2 = df_l2[df_l2['l_type_2'] != ' л.']
             if df_l2.shape[0] > 1:
                 err = err + 1
                 print(f"Найдена ошибка номер {err}: ")
                 print(df_l2)
                 df_err = pd.concat([df_err, df_l2])
+        elif(master_df_2.shape[0] >=4):
+            err = err + 1
+            print(f"Найдена ошибка номер {err}: ")
+            print(master_df_2)
+            df_err = pd.concat([df_err, master_df_2])
 
 if err == 0:
     print("Ошибок нет")
